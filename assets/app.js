@@ -138,7 +138,40 @@ document.querySelectorAll('.store-card').forEach(card => {
 const quickView = document.createElement('div'); quickView.className = 'quick-view-modal'; quickView.innerHTML = '<div class="quick-view-backdrop"></div><div class="quick-view-dialog"><button class="quick-view-close" aria-label="ปิด">×</button><div class="quick-view-content"></div></div>'; document.body.appendChild(quickView);
 const quickStyle = document.createElement('style'); quickStyle.textContent = '.quick-view-modal{position:fixed;inset:0;z-index:100;display:none;place-items:center;padding:20px}.quick-view-modal.open{display:grid}.quick-view-backdrop{position:absolute;inset:0;background:rgba(20,31,24,.6);backdrop-filter:blur(5px)}.quick-view-dialog{position:relative;z-index:1;width:min(760px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:15px;padding:25px;box-shadow:0 25px 70px rgba(0,0,0,.25)}.quick-view-close{position:absolute;right:15px;top:11px;border:0;background:transparent;font-size:27px;cursor:pointer;color:#576158}.quick-view-content{display:grid;grid-template-columns:1fr 1fr;gap:25px}.quick-view-content img{width:100%;height:360px;object-fit:cover;border-radius:9px}.quick-view-content h2{margin:8px 0 16px}.quick-view-loading{text-align:center;padding:50px;color:#6d766f}@media(max-width:600px){.quick-view-content{grid-template-columns:1fr}.quick-view-content img{height:260px}}'; document.head.appendChild(quickStyle);
 const closeQuick = () => quickView.classList.remove('open'); quickView.querySelector('.quick-view-close').addEventListener('click', closeQuick); quickView.querySelector('.quick-view-backdrop').addEventListener('click', closeQuick);
+addEventListener('keydown', event => { if (event.key === 'Escape') { closeQuick(); document.body.classList.remove('menu-open'); } });
 document.querySelectorAll('.store-card a.card-image').forEach(link => { const button=document.createElement('button'); button.type='button'; button.className='quick-view-button'; button.innerHTML='<span>⌕</span> ดูแบบเร็ว'; link.parentElement.appendChild(button); button.addEventListener('click', async event => { event.preventDefault(); quickView.classList.add('open'); const content=quickView.querySelector('.quick-view-content'); content.innerHTML='<div class="quick-view-loading">กำลังโหลดสินค้า…</div>'; try { const html=await fetch(link.href).then(r=>r.text()); const doc=new DOMParser().parseFromString(html,'text/html'); const image=doc.querySelector('.product-detail>img'); const title=doc.querySelector('.product-detail-copy h1'); const price=doc.querySelector('.product-price'); const desc=doc.querySelector('.product-detail-copy>p'); content.innerHTML='<div><img src="'+(image?.src||'')+'" alt=""></div><div><div class="eyebrow">MELLOW WEAR</div><h2>'+(title?.textContent||'สินค้า')+'</h2><div class="price">'+(price?.textContent||'')+'</div><p>'+(desc?.textContent||'')+'</p><a class="button" href="'+link.href+'">ดูรายละเอียดและเลือกไซซ์ →</a></div>'; } catch { content.innerHTML='<div class="quick-view-loading">โหลดข้อมูลไม่สำเร็จ</div>'; } }); });
+
+// Add-to-cart feedback without a full page reload. The normal form submit remains the fallback.
+const cartIcon = document.querySelector('.cart-icon');
+const showCartToast = (message, kind = 'success') => {
+  let toast = document.querySelector('.cart-toast');
+  if (!toast) { toast = document.createElement('div'); toast.className = 'cart-toast'; toast.setAttribute('role', 'status'); toast.setAttribute('aria-live', 'polite'); document.body.appendChild(toast); }
+  toast.className = `cart-toast ${kind}`; toast.textContent = message; requestAnimationFrame(() => toast.classList.add('is-visible'));
+  clearTimeout(showCartToast.timer); showCartToast.timer = setTimeout(() => toast.classList.remove('is-visible'), 3200);
+};
+const updateCartBadge = html => {
+  if (!cartIcon) return;
+  const doc = new DOMParser().parseFromString(html, 'text/html'); const nextBadge = doc.querySelector('.cart-icon b'); const currentBadge = cartIcon.querySelector('b');
+  if (nextBadge && currentBadge) currentBadge.textContent = nextBadge.textContent;
+  else if (nextBadge && !currentBadge) cartIcon.insertAdjacentHTML('beforeend', nextBadge.outerHTML);
+  else if (!nextBadge && currentBadge) currentBadge.remove();
+  cartIcon.classList.remove('cart-bump'); void cartIcon.offsetWidth; cartIcon.classList.add('cart-bump');
+};
+document.querySelectorAll('.quick-add-form, .add-cart-form').forEach(form => form.addEventListener('submit', async event => {
+  if (form.dataset.enhanced === 'true') return; form.dataset.enhanced = 'true'; event.preventDefault();
+  const button = form.querySelector('button[type="submit"]'); const original = button?.innerHTML; if (button) { button.disabled = true; button.classList.add('is-loading'); button.innerHTML = '<span class="button-spinner" aria-hidden="true"></span> กำลังเพิ่ม…'; }
+  try {
+    const response = await fetch(form.action || 'cart.php', { method: 'POST', body: new FormData(form), credentials: 'same-origin', headers: { 'X-Requested-With': 'fetch' } });
+    if (!response.ok) throw new Error('cart request failed'); const html = await response.text(); updateCartBadge(html); showCartToast('เพิ่มสินค้าลงตะกร้าแล้ว');
+    if (button) { button.classList.remove('is-loading'); button.classList.add('is-added'); button.innerHTML = 'เพิ่มแล้ว ✓'; setTimeout(() => { button.classList.remove('is-added'); button.innerHTML = original || 'เพิ่มลงตะกร้า'; button.disabled = false; }, 1800); }
+  } catch { form.dataset.enhanced = 'false'; if (button) { button.disabled = false; button.classList.remove('is-loading'); button.innerHTML = original || 'เพิ่มลงตะกร้า'; } form.submit(); }
+}));
+document.querySelectorAll('form:not(.quick-add-form):not(.add-cart-form)').forEach(form => form.addEventListener('submit', event => {
+  if (event.defaultPrevented || !form.checkValidity()) return;
+  const button = form.querySelector('button[type="submit"]'); if (!button || button.disabled || button.dataset.busy === 'true') return;
+  button.dataset.busy = 'true'; button.classList.add('is-loading'); button.setAttribute('aria-busy', 'true');
+  const label = button.textContent.trim(); button.dataset.originalLabel = label; button.textContent = 'กำลังดำเนินการ…';
+}));
 
 // Storefront hero carousel with pause-on-hover and keyboard-friendly controls.
 const hero = document.querySelector('.store-hero');

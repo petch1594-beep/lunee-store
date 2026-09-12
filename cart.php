@@ -3,6 +3,7 @@ require_once __DIR__.'/config.php';
 
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 $requestData = $_SERVER['REQUEST_METHOD'] === 'POST' ? $_POST : $_GET;
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !verify_csrf($_POST['csrf'] ?? null)) { http_response_code(403); exit('คำขอไม่ถูกต้อง'); }
 if ($action === 'add') {
         $id = (int)($requestData['product_id'] ?? 0);
         $stmt = db()->prepare('SELECT * FROM products WHERE id=? AND is_active=1'); $stmt->execute([$id]); $product = $stmt->fetch();
@@ -43,7 +44,7 @@ $page_title = 'ตะกร้าสินค้า | '.STORE_NAME; require __DI
   <?php if (!$items): ?>
     <section class="panel cart-empty"><div class="empty-cart-icon">♡</div><h2>ตะกร้าของคุณยังว่างอยู่</h2><p class="muted">เลือกชิ้นที่ชอบ แล้วกลับมาเช็กเอาต์ได้ทุกเมื่อ</p><a class="button" href="index.php">เริ่มเลือกสินค้า →</a></section>
   <?php else: ?>
-    <form method="post" class="cart-layout"><input type="hidden" name="action" value="update">
+    <form method="post" class="cart-layout"><input type="hidden" name="csrf" value="<?=e(csrf_token())?>"><input type="hidden" name="action" value="update">
       <section class="panel cart-list"><div class="cart-list-head"><h2>รายการสินค้า</h2><button class="text-button danger-text" type="submit" formaction="cart.php" name="action" value="clear" formnovalidate>ล้างตะกร้า</button></div>
       <?php foreach ($items as $key => $item): ?><article class="cart-item"><img src="<?=e($item['image_url'])?>" alt="<?=e($item['name'])?>"><div class="cart-item-info"><div class="card-meta"><?=e($item['color'])?><?= $item['size'] ? ' · ไซซ์ '.e($item['size']) : '' ?></div><h3><?=e($item['name'])?></h3><strong>฿<?=number_format($item['price'], 2)?></strong><button class="text-button danger-text" type="submit" name="remove_key" value="<?=e($key)?>" formnovalidate>นำออก</button></div><div class="quantity-control"><button type="button" data-qty-minus>−</button><input name="quantity[<?=e($key)?>]" value="<?=$item['quantity']?>" min="1" max="99" inputmode="numeric"><button type="button" data-qty-plus>+</button></div><div class="line-total">฿<?=number_format($item['price']*$item['quantity'], 2)?></div></article><?php endforeach; ?><button class="button button-outline cart-update" type="submit">อัปเดตจำนวน</button></section>
       <aside class="panel cart-summary"><div class="eyebrow">ORDER SUMMARY</div><h2>สรุปคำสั่งซื้อ</h2><div class="summary-row"><span>ยอดสินค้า</span><b>฿<?=number_format($total,2)?></b></div><div class="summary-row"><span>ค่าจัดส่ง</span><span class="muted">คำนวณเมื่อสั่งซื้อ</span></div><div class="summary-total"><span>รวมโดยประมาณ</span><b>฿<?=number_format($total,2)?></b></div><?php if (current_user()): ?><a class="button full" href="member.php">ดำเนินการสั่งซื้อ →</a><?php else: ?><a class="button full" href="login.php?redirect=cart.php">เข้าสู่ระบบเพื่อสั่งซื้อ →</a><small class="muted summary-note">คุณสามารถเลือกซื้อในฐานะผู้เยี่ยมชมได้</small><?php endif; ?></aside>
