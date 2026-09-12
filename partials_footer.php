@@ -1,0 +1,1 @@
+<footer><div><strong>LUNEÉ</strong><span>เสื้อผ้าที่เรียบง่าย สำหรับทุกวันของคุณ</span></div><span>© <?= date('Y') ?> LUNEÉ</span><a href="#top" class="footer-top">กลับขึ้นด้านบน ↑</a></footer><button class="back-to-top" aria-label="กลับขึ้นด้านบน">↑</button><script src="assets/app.js?v=20260912"></script></body></html>

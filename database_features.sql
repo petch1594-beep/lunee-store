@@ -1,0 +1,10 @@
+USE clothing_store;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token_hash VARCHAR(128) DEFAULT NULL, ADD COLUMN IF NOT EXISTS reset_expires_at DATETIME DEFAULT NULL;
+CREATE TABLE IF NOT EXISTS wishlists (
+  user_id INT UNSIGNED NOT NULL,
+  product_id INT UNSIGNED NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (user_id, product_id),
+  CONSTRAINT fk_wishlist_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  CONSTRAINT fk_wishlist_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);

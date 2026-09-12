@@ -1,0 +1,9 @@
+<FilesMatch "^client_secret.*\.json$">
+    Require all denied
+</FilesMatch>
+<FilesMatch "^facebook_app\.json$">
+    Require all denied
+</FilesMatch>
+<FilesMatch "^(config\.local\.php|\.env.*|.*\.sql)$">
+    Require all denied
+</FilesMatch>

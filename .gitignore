@@ -1,0 +1,5 @@
+config.local.php
+.env
+facebook_app.json
+client_secret*.json
+*.log

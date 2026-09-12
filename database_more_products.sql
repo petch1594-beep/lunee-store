@@ -1,0 +1,22 @@
+USE clothing_store;
+INSERT INTO products (name,category,brand,color,sizes,price,stock,image_url,description,is_active) VALUES
+('เสื้อยืด Airy Relax','men','Northline','เขียวมะกอก','S,M,L,XL',590,12,'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=700&q=85','เสื้อยืดทรง relaxed ผ้านุ่ม ใส่สบายทั้งวัน',1),
+('เสื้อเชิ้ต Oversized Studio','men','Urban Basic','ขาว','S,M,L,XL',790,9,'https://images.unsplash.com/photo-1596755389378-c31d21fd1273?auto=format&fit=crop&w=700&q=85','เสื้อเชิ้ตทรงโอเวอร์ไซซ์สำหรับลุคเรียบเท่',1),
+('แจ็กเก็ต Everyday Light','men','Northline','ดำ','M,L,XL',1490,7,'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&w=700&q=85','แจ็กเก็ตน้ำหนักเบา ใส่ได้ทุกฤดูกาล',1),
+('กางเกง Relaxed Taper','men','Urban Basic','กรมท่า','30,32,34,36',1090,8,'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?auto=format&fit=crop&w=700&q=85','กางเกงทรง taper เคลื่อนไหวคล่องตัว',1),
+('เสื้อโปโล Soft Knit','men','Mellow Studio','ครีม','S,M,L,XL',690,14,'https://images.unsplash.com/photo-1627225924765-552d49cf47ad?auto=format&fit=crop&w=700&q=85','โปโลผ้าถักเนื้อนุ่มสำหรับวันสบาย ๆ',1),
+('เดรส Cotton Day','women','Luna','ชมพูอ่อน','S,M,L',1190,10,'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=700&q=85','เดรสคอตตอนทรงสวย ใส่ได้ตั้งแต่เช้าถึงเย็น',1),
+('เสื้อเบลาส์ Calm Line','women','Luna','ฟ้า','S,M,L',850,13,'https://images.unsplash.com/photo-1485230895905-ec40ba36b9bc?auto=format&fit=crop&w=700&q=85','เสื้อเบลาส์เส้นสายสะอาดตา แมตช์ง่าย',1),
+('กระโปรง Midi Flow','women','Mellow Studio','เบจ','S,M,L',990,8,'https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=700&q=85','กระโปรงมิดี้ทรงพลิ้วสำหรับทุกโอกาส',1),
+('คาร์ดิแกน Cloud Touch','women','Luna','เหลือง','S,M,L',1090,11,'https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&w=700&q=85','คาร์ดิแกนน้ำหนักเบา สัมผัสนุ่มเป็นพิเศษ',1),
+('กางเกง Wide Leg Linen','women','Luna','ขาว','S,M,L',1290,6,'https://images.unsplash.com/photo-1506629905607-d9b1bdbf9c27?auto=format&fit=crop&w=700&q=85','กางเกงลินินขากว้าง ใส่สบายและดูดี',1),
+('เสื้อฮู้ด Cozy Junior','kids','Little Joy','ฟ้า','100,110,120,130',690,15,'https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?auto=format&fit=crop&w=700&q=85','เสื้อฮู้ดนุ่มสำหรับวันเล่นสนุก',1),
+('เสื้อยืด Rainbow Kids','kids','Little Joy','เหลือง','100,110,120,130',420,20,'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=700&q=85','เสื้อยืดสีสดใสสำหรับเจ้าตัวเล็ก',1),
+('กางเกง Jogger Junior','kids','Little Joy','เทา','100,110,120,130',590,12,'https://images.unsplash.com/photo-1519457431-44ccd64a579b?auto=format&fit=crop&w=700&q=85','จ็อกเกอร์เอวยืด ใส่สบายตลอดวัน',1),
+('เสื้อเชิ้ต Mini Classic','kids','Mellow Studio','ขาว','100,110,120,130',620,9,'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=700&q=85','เสื้อเชิ้ตคลาสสิกสำหรับวันพิเศษ',1),
+('ชุดเดรส Little Bloom','kids','Little Joy','ชมพู','100,110,120',780,7,'https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?auto=format&fit=crop&w=700&q=85','เดรสลายดอกไม้แสนสดใส',1),
+('เสื้อแขนยาว Daily Layer','men','Mellow Studio','เทา','S,M,L,XL',720,16,'https://images.unsplash.com/photo-1523398002811-999ca8dec234?auto=format&fit=crop&w=700&q=85','เสื้อแขนยาวสำหรับเลเยอร์ลุคประจำวัน',1),
+('เสื้อยืด Graphic Mood','men','Urban Basic','ดำ','S,M,L,XL',550,19,'https://images.unsplash.com/photo-1503341504253-dff4815485f1?auto=format&fit=crop&w=700&q=85','เสื้อยืดกราฟิกดีไซน์มินิมอล',1),
+('เสื้อกั๊ก Utility Soft','women','Northline','เขียว','S,M,L',890,8,'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=700&q=85','เสื้อกั๊ก utility น้ำหนักเบา สวมทับได้ง่าย',1),
+('เสื้อแขนกุด Minimal Form','women','Mellow Studio','ดำ','S,M,L',620,14,'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=700&q=85','เสื้อแขนกุดทรงเรียบสำหรับวันสบาย',1),
+('กางเกงขาสั้น Weekend','kids','Little Joy','กรมท่า','100,110,120,130',450,17,'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=700&q=85','กางเกงขาสั้นคล่องตัวสำหรับวันหยุด',1);
