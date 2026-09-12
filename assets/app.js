@@ -140,6 +140,32 @@ const quickStyle = document.createElement('style'); quickStyle.textContent = '.q
 const closeQuick = () => quickView.classList.remove('open'); quickView.querySelector('.quick-view-close').addEventListener('click', closeQuick); quickView.querySelector('.quick-view-backdrop').addEventListener('click', closeQuick);
 document.querySelectorAll('.store-card a.card-image').forEach(link => { const button=document.createElement('button'); button.type='button'; button.className='quick-view-button'; button.innerHTML='<span>⌕</span> ดูแบบเร็ว'; link.parentElement.appendChild(button); button.addEventListener('click', async event => { event.preventDefault(); quickView.classList.add('open'); const content=quickView.querySelector('.quick-view-content'); content.innerHTML='<div class="quick-view-loading">กำลังโหลดสินค้า…</div>'; try { const html=await fetch(link.href).then(r=>r.text()); const doc=new DOMParser().parseFromString(html,'text/html'); const image=doc.querySelector('.product-detail>img'); const title=doc.querySelector('.product-detail-copy h1'); const price=doc.querySelector('.product-price'); const desc=doc.querySelector('.product-detail-copy>p'); content.innerHTML='<div><img src="'+(image?.src||'')+'" alt=""></div><div><div class="eyebrow">MELLOW WEAR</div><h2>'+(title?.textContent||'สินค้า')+'</h2><div class="price">'+(price?.textContent||'')+'</div><p>'+(desc?.textContent||'')+'</p><a class="button" href="'+link.href+'">ดูรายละเอียดและเลือกไซซ์ →</a></div>'; } catch { content.innerHTML='<div class="quick-view-loading">โหลดข้อมูลไม่สำเร็จ</div>'; } }); });
 
+// Add-to-cart feedback without a full page reload. The normal form submit remains the fallback.
+const cartIcon = document.querySelector('.cart-icon');
+const showCartToast = (message, kind = 'success') => {
+  let toast = document.querySelector('.cart-toast');
+  if (!toast) { toast = document.createElement('div'); toast.className = 'cart-toast'; toast.setAttribute('role', 'status'); toast.setAttribute('aria-live', 'polite'); document.body.appendChild(toast); }
+  toast.className = `cart-toast ${kind}`; toast.textContent = message; requestAnimationFrame(() => toast.classList.add('is-visible'));
+  clearTimeout(showCartToast.timer); showCartToast.timer = setTimeout(() => toast.classList.remove('is-visible'), 3200);
+};
+const updateCartBadge = html => {
+  if (!cartIcon) return;
+  const doc = new DOMParser().parseFromString(html, 'text/html'); const nextBadge = doc.querySelector('.cart-icon b'); const currentBadge = cartIcon.querySelector('b');
+  if (nextBadge && currentBadge) currentBadge.textContent = nextBadge.textContent;
+  else if (nextBadge && !currentBadge) cartIcon.insertAdjacentHTML('beforeend', nextBadge.outerHTML);
+  else if (!nextBadge && currentBadge) currentBadge.remove();
+  cartIcon.classList.remove('cart-bump'); void cartIcon.offsetWidth; cartIcon.classList.add('cart-bump');
+};
+document.querySelectorAll('.quick-add-form, .add-cart-form').forEach(form => form.addEventListener('submit', async event => {
+  if (form.dataset.enhanced === 'true') return; form.dataset.enhanced = 'true'; event.preventDefault();
+  const button = form.querySelector('button[type="submit"]'); const original = button?.innerHTML; if (button) { button.disabled = true; button.classList.add('is-loading'); button.innerHTML = '<span class="button-spinner" aria-hidden="true"></span> กำลังเพิ่ม…'; }
+  try {
+    const response = await fetch(form.action || 'cart.php', { method: 'POST', body: new FormData(form), credentials: 'same-origin', headers: { 'X-Requested-With': 'fetch' } });
+    if (!response.ok) throw new Error('cart request failed'); const html = await response.text(); updateCartBadge(html); showCartToast('เพิ่มสินค้าลงตะกร้าแล้ว');
+    if (button) { button.classList.remove('is-loading'); button.classList.add('is-added'); button.innerHTML = 'เพิ่มแล้ว ✓'; setTimeout(() => { button.classList.remove('is-added'); button.innerHTML = original || 'เพิ่มลงตะกร้า'; button.disabled = false; }, 1800); }
+  } catch { form.dataset.enhanced = 'false'; if (button) { button.disabled = false; button.classList.remove('is-loading'); button.innerHTML = original || 'เพิ่มลงตะกร้า'; } form.submit(); }
+}));
+
 // Storefront hero carousel with pause-on-hover and keyboard-friendly controls.
 const hero = document.querySelector('.store-hero');
 if (hero) {
